@@ -2,6 +2,7 @@ package com.cjx3711.sporeoid;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
@@ -9,7 +10,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.TimeUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,15 +23,15 @@ public class GameMain extends ApplicationAdapter implements InputProcessor {
 	Texture img;
 	private int w,h;
 
-	class TouchInfo {
-		public float touchX = 0;
-		public float touchY = 0;
-		public boolean touched = false;
-	}
-
 
 	private Map<Integer,TouchInfo> touches = new HashMap<Integer,TouchInfo>();
-	
+    private int maxTouches = 6;
+
+    private ArrayList<GameObject> gameObjects = new ArrayList<GameObject>();
+
+    private long previousMills = 0;
+    private long currentMills = 0;
+
 	@Override
 	public void create () {
         Gdx.app.setLogLevel(Application.LOG_DEBUG);
@@ -42,6 +45,7 @@ public class GameMain extends ApplicationAdapter implements InputProcessor {
 		for(int i = 0; i < 5; i++){
 			touches.put(i, new TouchInfo());
 		}
+        previousMills = currentMills = TimeUtils.millis();
 	}
 
 	@Override
@@ -53,16 +57,16 @@ public class GameMain extends ApplicationAdapter implements InputProcessor {
 
 		message = "";
 		for(int i = 0; i < 5; i++){
-			if(touches.get(i).touched)
+			if(touches.get(i).isTouched())
 				message += "Finger:" + Integer.toString(i) + "touch at:" +
-						Float.toString(touches.get(i).touchX) +
+						Float.toString(touches.get(i).getTouchX()) +
 						"," +
-						Float.toString(touches.get(i).touchY) +
+						Float.toString(touches.get(i).getTouchY()) +
 						"\n";
 
 		}
 
-        Gdx.app.debug("GameMain", message);
+//        Gdx.app.debug("GameMain", message);
 
 		batch.end();
 
@@ -70,6 +74,17 @@ public class GameMain extends ApplicationAdapter implements InputProcessor {
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 		shapeRenderer.circle(50, 50, 32);
 		shapeRenderer.end();
+
+        currentMills = TimeUtils.millis();
+        float deltaMills = currentMills - previousMills;
+        previousMills = currentMills;
+        for ( GameObject gameObject : gameObjects ) {
+            gameObject.calculate(deltaMills / 1000.0f);
+        }
+
+        for ( GameObject gameObject : gameObjects ) {
+            gameObject.render(shapeRenderer);
+        }
 	}
 	
 	@Override
@@ -95,25 +110,38 @@ public class GameMain extends ApplicationAdapter implements InputProcessor {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		if(pointer < 5){
-			touches.get(pointer).touchX = screenX;
-			touches.get(pointer).touchY = screenY;
-			touches.get(pointer).touched = true;
+		if(pointer < maxTouches){
+            touches.get(pointer).start(screenX, screenY);
 		}
 		return true;
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		if(pointer < 5){
-			touches.get(pointer).touchX = 0;
-			touches.get(pointer).touchY = 0;
-			touches.get(pointer).touched = false;
+		if(pointer < maxTouches){
+            TouchInfo touch = touches.get(pointer);
+            float startX = touch.getStartX();
+            float startY = h - touch.getStartY();
+            float deltaX = touch.getDeltaX();
+            float deltaY = -touch.getDeltaY();
+            float time = touch.getElapsedTime();
+            float distance = (float)Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            float speed = distance / (time / 1000);
+            Gdx.app.debug("GameMain", "Distance: " + distance + " speed: " + speed + " px/s");
+			touches.get(pointer).end();
+            if ( speed > 10 ) {
+                GameObjectDynamic gameObject = new GameObjectDynamic(startX, startY);
+                gameObject.setVelocity(deltaX, deltaY);
+                gameObjects.add(gameObject);
+            }
 		}
 		return true;
 	}
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
+        if(pointer < maxTouches){
+            touches.get(pointer).update(screenX, screenY);
+        }
 		return false;
 	}
 
