@@ -1,4 +1,4 @@
-package com.cjx3711.sporeoid;
+package com.cjx3711.sporeoid.managers;
 
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -12,7 +12,7 @@ public class TouchInfo {
     private float touchY = 0;
     private boolean touched = false;
     private long startMills = 0;
-    TouchInfo() {
+    public TouchInfo() {
 
     }
 
