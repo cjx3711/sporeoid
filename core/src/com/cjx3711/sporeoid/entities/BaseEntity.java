@@ -1,4 +1,4 @@
-package com.cjx3711.sporeoid;
+package com.cjx3711.sporeoid.entities;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -7,10 +7,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
  * Base game object class
  */
 
-public class GameObject {
+public class BaseEntity {
     protected float posX, posY;
 
-    GameObject(float x, float y) {
+    BaseEntity(float x, float y) {
         posX = x;
         posY = y;
     }

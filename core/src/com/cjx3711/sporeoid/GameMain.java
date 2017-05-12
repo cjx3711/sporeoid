@@ -2,7 +2,6 @@ package com.cjx3711.sporeoid;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
@@ -11,8 +10,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.cjx3711.sporeoid.managers.GameScene;
+import com.cjx3711.sporeoid.utils.ScalingUtil;
+import com.cjx3711.sporeoid.utils.TimeKeeper;
 
-import java.util.ArrayList;
+import java.sql.Time;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,17 +23,11 @@ public class GameMain extends ApplicationAdapter implements InputProcessor {
 	ShapeRenderer shapeRenderer;
 	private String message = "Touch something already!";
 	Texture img;
-	private int w,h;
-
 
 	private Map<Integer,TouchInfo> touches = new HashMap<Integer,TouchInfo>();
     private int maxTouches = 6;
 
-    private ArrayList<GameObject> gameObjects = new ArrayList<GameObject>();
-
-    private long previousMills = 0;
-    private long currentMills = 0;
-
+	private GameScene mainScene;
 	@Override
 	public void create () {
         Gdx.app.setLogLevel(Application.LOG_DEBUG);
@@ -39,13 +35,16 @@ public class GameMain extends ApplicationAdapter implements InputProcessor {
 		batch = new SpriteBatch();
 		img = new Texture("badlogic.jpg");
 
-		w = Gdx.graphics.getWidth();
-		h = Gdx.graphics.getHeight();
+		ScalingUtil.init(Gdx.graphics);
+
 		Gdx.input.setInputProcessor(this);
 		for(int i = 0; i < 5; i++){
 			touches.put(i, new TouchInfo());
 		}
-        previousMills = currentMills = TimeUtils.millis();
+
+        TimeKeeper.init();
+		mainScene = new GameScene();
+
 	}
 
 	@Override
@@ -75,16 +74,10 @@ public class GameMain extends ApplicationAdapter implements InputProcessor {
 		shapeRenderer.circle(50, 50, 32);
 		shapeRenderer.end();
 
-        currentMills = TimeUtils.millis();
-        float deltaMills = currentMills - previousMills;
-        previousMills = currentMills;
-        for ( GameObject gameObject : gameObjects ) {
-            gameObject.calculate(deltaMills / 1000.0f);
-        }
+        TimeKeeper.calculate();
 
-        for ( GameObject gameObject : gameObjects ) {
-            gameObject.render(shapeRenderer);
-        }
+		mainScene.calculate(TimeKeeper.getDelta());
+		mainScene.render(shapeRenderer);
 	}
 	
 	@Override
@@ -121,7 +114,7 @@ public class GameMain extends ApplicationAdapter implements InputProcessor {
 		if(pointer < maxTouches){
             TouchInfo touch = touches.get(pointer);
             float startX = touch.getStartX();
-            float startY = h - touch.getStartY();
+            float startY = ScalingUtil.touchToScreen(touch.getStartY());
             float deltaX = touch.getDeltaX();
             float deltaY = -touch.getDeltaY();
             float time = touch.getElapsedTime();
@@ -129,10 +122,8 @@ public class GameMain extends ApplicationAdapter implements InputProcessor {
             float speed = distance / (time / 1000);
             Gdx.app.debug("GameMain", "Distance: " + distance + " speed: " + speed + " px/s");
 			touches.get(pointer).end();
-            if ( speed > 10 ) {
-                GameObjectDynamic gameObject = new GameObjectDynamic(startX, startY);
-                gameObject.setVelocity(deltaX, deltaY);
-                gameObjects.add(gameObject);
+            if ( speed > 20 ) {
+				mainScene.addProjectile(startX, startY, deltaX, deltaY);
             }
 		}
 		return true;

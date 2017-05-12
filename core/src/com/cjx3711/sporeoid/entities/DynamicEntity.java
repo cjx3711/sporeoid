@@ -1,13 +1,13 @@
-package com.cjx3711.sporeoid;
+package com.cjx3711.sporeoid.entities;
 
 /**
  * The base class of a game object that can move
  */
 
-public class GameObjectDynamic extends GameObject {
+public class DynamicEntity extends BaseEntity {
     protected float velX, velY;
 
-    public GameObjectDynamic(float x, float y) {
+    public DynamicEntity(float x, float y) {
         super(x,y);
     }
 
