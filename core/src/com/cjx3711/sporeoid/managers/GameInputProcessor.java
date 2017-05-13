@@ -2,6 +2,7 @@ package com.cjx3711.sporeoid.managers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.cjx3711.sporeoid.utils.RandomUtil;
 import com.cjx3711.sporeoid.utils.ScalingUtil;
 import com.cjx3711.sporeoid.utils.Vect2D;
 
@@ -67,8 +68,16 @@ public class GameInputProcessor implements InputProcessor {
             float speed = distance / (time / 1000);
             Gdx.app.debug("InputProcessor", "Distance: " + distance + " speed: " + speed + " px/s");
 
-            if ( speed > 20 ) {
-                GameSceneManager.getInstance().getGameScene().addProjectile(start, delta);
+            if ( distance > 20 && speed > 20 ) {
+                float posVar = 15.0f;
+                float vecVar = 7.0f;
+                for ( int i = 0; i < 6; i ++ ) {
+                    Vect2D s = new Vect2D(start.getX() + RandomUtil.randomFloat(-posVar, posVar), start.getY() + RandomUtil.randomFloat(-posVar, posVar));
+                    Vect2D d = new Vect2D(delta.getX() + RandomUtil.randomFloat(-vecVar, vecVar), delta.getY() + RandomUtil.randomFloat(-vecVar, vecVar));
+                    d.scaleBy(0.4f);
+                    GameSceneManager.getInstance().getGameScene().addProjectile(s, d);
+                }
+
             }
 
             touches.get(pointer).end();

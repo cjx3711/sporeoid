@@ -64,6 +64,10 @@ public class Vect2D {
         this.y = y;
     }
 
+    public void scaleBy(float scale) {
+        x *= scale;
+        y *= scale;
+    }
     public Vect2D subtract(Vect2D subtractee) {
         return new Vect2D(x - subtractee.x, y - subtractee.y);
     }
@@ -78,7 +82,6 @@ public class Vect2D {
     public float distance() {
         return (float)Math.sqrt(distanceSquared());
     }
-
 
     @Override
     public String toString() {
