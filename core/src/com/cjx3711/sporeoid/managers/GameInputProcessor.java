@@ -42,11 +42,9 @@ public class GameInputProcessor implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        Gdx.app.debug("InputProcessor",  "Down: " + screenX + " " + screenY);
         if(pointer < maxTouches) {
             temp.set(screenX, screenY);
             temp = ScalingUtil.touchToStandard(temp);
-            Gdx.app.debug("InputProcessor",  "Down: " + temp);
             touches.get(pointer).start(temp);
         }
         return true;
@@ -54,11 +52,9 @@ public class GameInputProcessor implements InputProcessor {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        Gdx.app.debug("InputProcessor", "Up: " + screenX + " " + screenY);
         if(pointer < maxTouches) {
             temp.set(screenX, screenY);
             temp = ScalingUtil.touchToStandard(temp);
-            Gdx.app.debug("InputProcessor",  "Up: " + temp);
             touches.get(pointer).update(temp);
             TouchInfo touch = touches.get(pointer);
             Vect2D start = touch.getStart();
@@ -66,16 +62,16 @@ public class GameInputProcessor implements InputProcessor {
             float time = touch.getElapsedTime();
             float distance = delta.distance();
             float speed = distance / (time / 1000);
-            Gdx.app.debug("InputProcessor", "Distance: " + distance + " speed: " + speed + " px/s");
 
             if ( distance > 20 && speed > 20 ) {
-                float posVar = 15.0f;
-                float vecVar = 7.0f;
-                for ( int i = 0; i < 6; i ++ ) {
+                float posVar = 40.0f;
+                float vecVar = 30.0f;
+                int team = start.getX() > ScalingUtil.getStandardWidth() * 0.5f ? 1 : 2;
+                for ( int i = 0; i < 15; i ++ ) {
                     Vect2D s = new Vect2D(start.getX() + RandomUtil.randomFloat(-posVar, posVar), start.getY() + RandomUtil.randomFloat(-posVar, posVar));
                     Vect2D d = new Vect2D(delta.getX() + RandomUtil.randomFloat(-vecVar, vecVar), delta.getY() + RandomUtil.randomFloat(-vecVar, vecVar));
                     d.scaleBy(0.4f);
-                    GameSceneManager.getInstance().getGameScene().addProjectile(s, d);
+                    GameSceneManager.getInstance().getGameScene().addProjectile(s, d, team);
                 }
 
             }

@@ -61,4 +61,33 @@ public class ScalingUtil {
     public static float getStandardWidth() {
         return standardWidth;
     }
+
+    public static float fromTop(float value) {
+        return standardHeight - value;
+    }
+
+    public static float fromBottom(float value) {
+        return value; // Umm
+    }
+
+    public static float fromRight(float value) {
+        return standardWidth - value;
+    }
+
+    public static float fromLeft(float value) {
+        return value; // Umm
+    }
+
+    public static float rightOfCentre(float value) {
+        return standardWidth * 0.5f + value;
+    }
+    public static float leftOfCentre(float value) {
+        return standardWidth * 0.5f - value;
+    }
+    public static float aboveCentre(float value) {
+        return standardHeight * 0.5f + value;
+    }
+    public static float belowCentre(float value) {
+        return standardHeight * 0.5f - value;
+    }
 }

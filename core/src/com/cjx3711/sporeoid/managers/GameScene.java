@@ -1,8 +1,9 @@
 package com.cjx3711.sporeoid.managers;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.cjx3711.sporeoid.entities.BaseEntity;
+import com.cjx3711.sporeoid.entities.PlanetEntity;
 import com.cjx3711.sporeoid.entities.ProjectileEntity;
+import com.cjx3711.sporeoid.utils.ScalingUtil;
 import com.cjx3711.sporeoid.utils.Vect2D;
 
 import java.util.ArrayList;
@@ -14,30 +15,53 @@ import java.util.Iterator;
 
 public class GameScene {
     private ArrayList<ProjectileEntity> projectiles;
+    private ArrayList<PlanetEntity> planets;
     public GameScene() {
-        projectiles = new ArrayList();
+        projectiles = new ArrayList<ProjectileEntity>();
+        planets = new ArrayList<PlanetEntity>();
+
+        planets.add(new PlanetEntity(ScalingUtil.rightOfCentre(50), ScalingUtil.aboveCentre(50), 30));
+        planets.add(new PlanetEntity(ScalingUtil.leftOfCentre(50), ScalingUtil.belowCentre(50), 30));
     }
 
-    public void addProjectile(Vect2D pos, Vect2D vel) {
-        ProjectileEntity projectileEntity = new ProjectileEntity(pos, vel);
+    public void addProjectile(Vect2D pos, Vect2D vel, int team) {
+        ProjectileEntity projectileEntity = new ProjectileEntity(pos, vel, team);
         projectiles.add(projectileEntity);
     }
 
     public void calculate(float delta) {
+        for (PlanetEntity planet : planets) {
+            planet.calculate(delta);
+        }
+
         for (ProjectileEntity projectile : projectiles) {
             projectile.calculate(delta);
+        }
+
+        // Collisions
+        for (PlanetEntity planet : planets) {
+            for (ProjectileEntity projectile : projectiles) {
+                if ( planet.sqDistFrom(projectile) < (planet.getRadius() + projectile.getRadius()) * (planet.getRadius() + projectile.getRadius()) ) {
+                    projectile.destroy();
+                    planet.hit(projectile.getTeam());
+                }
+            }
         }
 
         Iterator<ProjectileEntity> iter = projectiles.iterator();
         while (iter.hasNext()) {
             ProjectileEntity proj = iter.next();
-            if (proj.isOutOfBounds()) iter.remove();
+            if (proj.isDestroyed()) iter.remove();
         }
     }
 
     public void render(ShapeRenderer renderer) {
         for (ProjectileEntity projectile : projectiles) {
             projectile.render(renderer);
+        }
+
+        for (PlanetEntity planet : planets) {
+            planet.render(renderer);
         }
     }
 }

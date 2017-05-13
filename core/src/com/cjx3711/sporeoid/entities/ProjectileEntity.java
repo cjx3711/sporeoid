@@ -10,21 +10,37 @@ import com.cjx3711.sporeoid.utils.Vect2D;
  */
 
 public class ProjectileEntity extends DynamicEntity {
-    protected boolean outOfBounds = false;
-    protected float radius = 5;
+    protected boolean destroyed = false;
+    protected float radius = 4;
+    protected int team;
 
-    public ProjectileEntity(Vect2D pos, Vect2D vel) {
+    public ProjectileEntity(Vect2D pos, Vect2D vel, int team) {
         super(pos);
         setVelocity(vel);
+        this.team = team;
     }
 
-    public boolean isOutOfBounds() {
-        return outOfBounds;
+    public boolean isDestroyed() {
+        return destroyed;
+    }
+
+    public float getRadius() {
+        return radius;
+    }
+
+    public int getTeam() {
+        return team;
     }
 
     @Override
     public void render(ShapeRenderer shapeRenderer) {
-        shapeRenderer.setColor(Color.BLACK);
+        switch (team) {
+            case 1:
+                shapeRenderer.setColor(Color.RED);
+            break;
+            case 2:
+                shapeRenderer.setColor(Color.BLUE);
+        }
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         shapeRenderer.circle(
@@ -38,10 +54,13 @@ public class ProjectileEntity extends DynamicEntity {
     public void calculate(float delta) {
         super.calculate(delta);
 
-        if ( !outOfBounds && (pos.getX() + radius < 0 || pos.getY() + radius < 0 || pos.getY() - radius > ScalingUtil.getStandardHeight() || pos.getX() - radius > ScalingUtil.getStandardWidth()) ) {
-            outOfBounds = true;
+        if ( !destroyed && (pos.getX() + radius < 0 || pos.getY() + radius < 0 || pos.getY() - radius > ScalingUtil.getStandardHeight() || pos.getX() - radius > ScalingUtil.getStandardWidth()) ) {
+            destroyed = true;
         }
     }
 
 
+    public void destroy() {
+        destroyed = true;
+    }
 }

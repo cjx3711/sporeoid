@@ -12,6 +12,9 @@ import com.cjx3711.sporeoid.utils.Vect2D;
 public class BaseEntity {
     protected Vect2D pos;
 
+    BaseEntity(float x, float y) {
+        this.pos = new Vect2D(x,y);
+    }
     BaseEntity(Vect2D pos) {
         this.pos = pos.copy();
     }
@@ -29,5 +32,13 @@ public class BaseEntity {
 
     public void calculate(float delta) {
 
+    }
+
+    public Vect2D getPos() {
+        return pos;
+    }
+
+    public float sqDistFrom(BaseEntity entity) {
+        return pos.subtract(entity.pos).distanceSquared();
     }
 }
