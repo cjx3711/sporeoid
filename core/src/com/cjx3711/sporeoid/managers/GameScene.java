@@ -1,29 +1,43 @@
 package com.cjx3711.sporeoid.managers;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.cjx3711.sporeoid.entities.BaseEntity;
 import com.cjx3711.sporeoid.entities.ProjectileEntity;
+import com.cjx3711.sporeoid.utils.Vect2D;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Manages the scene of the game
  */
 
 public class GameScene {
-    private EntityManager projectiles;
+    private ArrayList<ProjectileEntity> projectiles;
     public GameScene() {
-        projectiles = new EntityManager();
+        projectiles = new ArrayList();
     }
 
-    public void addProjectile(float x, float y, float vX, float vY) {
-        ProjectileEntity projectileEntity = new ProjectileEntity(x, y);
-        projectileEntity.setVelocity(vX, vY);
-        projectiles.addEntity(projectileEntity);
+    public void addProjectile(Vect2D pos, Vect2D vel) {
+        ProjectileEntity projectileEntity = new ProjectileEntity(pos, vel);
+        projectiles.add(projectileEntity);
     }
 
     public void calculate(float delta) {
-        projectiles.calculate(delta);
+        for (ProjectileEntity projectile : projectiles) {
+            projectile.calculate(delta);
+        }
+
+        Iterator<ProjectileEntity> iter = projectiles.iterator();
+        while (iter.hasNext()) {
+            ProjectileEntity proj = iter.next();
+            if (proj.isOutOfBounds()) iter.remove();
+        }
     }
 
     public void render(ShapeRenderer renderer) {
-        projectiles.render(renderer);
+        for (ProjectileEntity projectile : projectiles) {
+            projectile.render(renderer);
+        }
     }
 }

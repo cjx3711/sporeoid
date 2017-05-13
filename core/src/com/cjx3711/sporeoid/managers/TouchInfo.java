@@ -1,61 +1,56 @@
 package com.cjx3711.sporeoid.managers;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.cjx3711.sporeoid.utils.Vect2D;
 
 /**
  * Handles the touches
  */
 public class TouchInfo {
-    private float startX = 0;
-    private float startY = 0;
-    private float touchX = 0;
-    private float touchY = 0;
+    private Vect2D start;
+    private Vect2D touch;
     private boolean touched = false;
     private long startMills = 0;
     public TouchInfo() {
-
+        start = new Vect2D();
+        touch = new Vect2D();
     }
 
-    public void start(float x, float y) {
-        startX = touchX = x;
-        startY = touchY = y;
+    public void start(Vect2D pos) {
+        start.set(pos);
         startMills = TimeUtils.millis();
     }
-    public void update(float x, float y) {
-        touchX = x;
-        touchY = y;
+    public void update(Vect2D pos) {
+
+        touch.set(pos);
     }
     public long getElapsedTime() {
         return TimeUtils.millis() - startMills;
     }
     public float getDeltaX() {
-        return touchX - startX;
+        return touch.getX() - start.getX();
     }
     public float getDeltaY() {
-        return touchY - startY;
+        return touch.getY() - start.getY();
     }
+    public Vect2D getDelta() {
+        return touch.subtract(start);
+    }
+
     public void end() {
-        startX = touchX = 0;
-        startY = touchY = 0;
+        start.set(0,0);
+        touch.set(0,0);
         touched = false;
     }
 
-    public float getStartX() {
-        return startX;
+    public Vect2D getStart() {
+        return start.copy();
     }
 
-    public float getStartY() {
-        return startY;
+    public Vect2D getTouch() {
+        return touch.copy();
     }
-
-    public float getTouchX() {
-        return touchX;
-    }
-
-    public float getTouchY() {
-        return touchY;
-    }
-
     public boolean isTouched() {
         return touched;
     }

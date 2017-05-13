@@ -3,6 +3,7 @@ package com.cjx3711.sporeoid.managers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.cjx3711.sporeoid.utils.ScalingUtil;
+import com.cjx3711.sporeoid.utils.Vect2D;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,9 +15,11 @@ import java.util.Map;
 public class GameInputProcessor implements InputProcessor {
     private Map<Integer,TouchInfo> touches = new HashMap<Integer,TouchInfo>();
     private int maxTouches = 6;
+    private Vect2D temp;
 
     public GameInputProcessor() {
-        for(int i = 0; i < 5; i++){
+        temp = new Vect2D();
+        for(int i = 0; i < 5; i++) {
             touches.put(i, new TouchInfo());
         }
     }
@@ -38,28 +41,37 @@ public class GameInputProcessor implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if(pointer < maxTouches){
-            touches.get(pointer).start(screenX, screenY);
+        Gdx.app.debug("InputProcessor",  "Down: " + screenX + " " + screenY);
+        if(pointer < maxTouches) {
+            temp.set(screenX, screenY);
+            temp = ScalingUtil.touchToStandard(temp);
+            Gdx.app.debug("InputProcessor",  "Down: " + temp);
+            touches.get(pointer).start(temp);
         }
         return true;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        if(pointer < maxTouches){
+        Gdx.app.debug("InputProcessor", "Up: " + screenX + " " + screenY);
+        if(pointer < maxTouches) {
+            temp.set(screenX, screenY);
+            temp = ScalingUtil.touchToStandard(temp);
+            Gdx.app.debug("InputProcessor",  "Up: " + temp);
+            touches.get(pointer).update(temp);
             TouchInfo touch = touches.get(pointer);
-            float startX = touch.getStartX();
-            float startY = ScalingUtil.touchToScreen(touch.getStartY());
-            float deltaX = touch.getDeltaX();
-            float deltaY = -touch.getDeltaY();
+            Vect2D start = touch.getStart();
+            Vect2D delta = touch.getDelta();
             float time = touch.getElapsedTime();
-            float distance = (float)Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            float distance = delta.distance();
             float speed = distance / (time / 1000);
-            Gdx.app.debug("GameMain", "Distance: " + distance + " speed: " + speed + " px/s");
-            touches.get(pointer).end();
+            Gdx.app.debug("InputProcessor", "Distance: " + distance + " speed: " + speed + " px/s");
+
             if ( speed > 20 ) {
-                GameSceneManager.getInstance().getGameScene().addProjectile(startX, startY, deltaX, deltaY);
+                GameSceneManager.getInstance().getGameScene().addProjectile(start, delta);
             }
+
+            touches.get(pointer).end();
         }
         return true;
     }
@@ -67,7 +79,8 @@ public class GameInputProcessor implements InputProcessor {
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         if(pointer < maxTouches){
-            touches.get(pointer).update(screenX, screenY);
+            temp.set(screenX, screenY);
+            touches.get(pointer).update(ScalingUtil.touchToStandard(temp));
         }
         return false;
     }
