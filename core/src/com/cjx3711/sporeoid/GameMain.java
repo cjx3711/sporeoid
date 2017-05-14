@@ -16,7 +16,6 @@ public class GameMain extends ApplicationAdapter {
     GameInputProcessor inputProcessor;
 
     private GameSceneManager sceneManager;
-	private GameScene mainScene;
 	@Override
 	public void create () {
         Gdx.app.setLogLevel(Application.LOG_DEBUG);
@@ -27,7 +26,6 @@ public class GameMain extends ApplicationAdapter {
 		Gdx.input.setInputProcessor(inputProcessor);
 
         TimeKeeper.init();
-		mainScene = new GameScene();
 
         sceneManager = GameSceneManager.getInstance();
         sceneManager.startGame();

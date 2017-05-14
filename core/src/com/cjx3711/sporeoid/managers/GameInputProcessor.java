@@ -56,26 +56,6 @@ public class GameInputProcessor implements InputProcessor {
             temp.set(screenX, screenY);
             temp = ScalingUtil.touchToStandard(temp);
             touches.get(pointer).update(temp);
-            TouchInfo touch = touches.get(pointer);
-            Vect2D start = touch.getStart();
-            Vect2D delta = touch.getDelta();
-            float time = touch.getElapsedTime();
-            float distance = delta.distance();
-            float speed = distance / (time / 1000);
-
-            if ( distance > 20 && speed > 20 ) {
-                float posVar = 40.0f;
-                float vecVar = 30.0f;
-                int team = start.getX() > ScalingUtil.getStandardWidth() * 0.5f ? 1 : 2;
-                for ( int i = 0; i < 15; i ++ ) {
-                    Vect2D s = new Vect2D(start.getX() + RandomUtil.randomFloat(-posVar, posVar), start.getY() + RandomUtil.randomFloat(-posVar, posVar));
-                    Vect2D d = new Vect2D(delta.getX() + RandomUtil.randomFloat(-vecVar, vecVar), delta.getY() + RandomUtil.randomFloat(-vecVar, vecVar));
-                    d.scaleBy(0.4f);
-                    GameSceneManager.getInstance().getGameScene().addProjectile(s, d, team);
-                }
-
-            }
-
             touches.get(pointer).end();
         }
         return true;

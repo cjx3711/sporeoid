@@ -10,6 +10,7 @@ import com.cjx3711.sporeoid.utils.Vect2D;
  */
 
 public class BaseEntity {
+    protected boolean destroyed = false;
     protected Vect2D pos;
 
     BaseEntity(float x, float y) {
@@ -40,5 +41,9 @@ public class BaseEntity {
 
     public float sqDistFrom(BaseEntity entity) {
         return pos.subtract(entity.pos).distanceSquared();
+    }
+
+    public void destroy() {
+        destroyed = true;
     }
 }

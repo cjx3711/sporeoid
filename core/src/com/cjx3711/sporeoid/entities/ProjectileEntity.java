@@ -10,7 +10,6 @@ import com.cjx3711.sporeoid.utils.Vect2D;
  */
 
 public class ProjectileEntity extends DynamicEntity {
-    protected boolean destroyed = false;
     protected float radius = 4;
     protected int team;
 
@@ -55,12 +54,7 @@ public class ProjectileEntity extends DynamicEntity {
         super.calculate(delta);
 
         if ( !destroyed && (pos.getX() + radius < 0 || pos.getY() + radius < 0 || pos.getY() - radius > ScalingUtil.getStandardHeight() || pos.getX() - radius > ScalingUtil.getStandardWidth()) ) {
-            destroyed = true;
+            destroy();
         }
-    }
-
-
-    public void destroy() {
-        destroyed = true;
     }
 }
