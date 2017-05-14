@@ -18,9 +18,9 @@ public class GameSceneManager {
     }
 
     private GameScene gameScene;
-    SpriteBatch batch;
-    ShapeRenderer shapeRenderer;
-    Texture img;
+    private SpriteBatch batch;
+    private ShapeRenderer shapeRenderer;
+    private Texture img;
 
 
     private GameSceneManager() {

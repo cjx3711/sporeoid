@@ -23,6 +23,7 @@ public class TouchInfo {
 
     public void start(Vect2D pos) {
         start.set(pos);
+        touch.set(pos);
         startMills = TimeUtils.millis();
         ClickableEntity.processClick(this);
         if ( callback != null ) {

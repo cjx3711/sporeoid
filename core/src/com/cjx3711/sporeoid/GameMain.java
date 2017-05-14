@@ -11,9 +11,7 @@ import com.cjx3711.sporeoid.utils.TimeKeeper;
 
 public class GameMain extends ApplicationAdapter {
 
-	private String message = "Touch something already!";
-
-    GameInputProcessor inputProcessor;
+    private GameInputProcessor inputProcessor;
 
     private GameSceneManager sceneManager;
 	@Override

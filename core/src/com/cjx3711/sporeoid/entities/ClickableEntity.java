@@ -1,6 +1,5 @@
 package com.cjx3711.sporeoid.entities;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.cjx3711.sporeoid.callbacks.TouchCallback;
@@ -11,8 +10,10 @@ import com.cjx3711.sporeoid.utils.Vect2D;
 import java.util.ArrayList;
 
 /**
+ * Entity that allows clickyness.
+ * It does not work by itself and will need to be inherited from.
  * This also contains it's own list to keep track of all clickable things.
- * Entity that allows clickyness
+ *
  */
 
 public abstract class ClickableEntity extends BaseEntity {

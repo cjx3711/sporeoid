@@ -1,8 +1,6 @@
 package com.cjx3711.sporeoid.managers;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
-import com.cjx3711.sporeoid.utils.RandomUtil;
 import com.cjx3711.sporeoid.utils.ScalingUtil;
 import com.cjx3711.sporeoid.utils.Vect2D;
 

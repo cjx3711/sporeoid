@@ -19,6 +19,10 @@ public class ProjectileEntity extends DynamicEntity {
         this.team = team;
     }
 
+    public void adjustVelocity(Vect2D adjustment) {
+        vel.set(vel.getX() + adjustment.getX(), vel.getY() + adjustment.getY());
+    }
+
     public boolean isDestroyed() {
         return destroyed;
     }

@@ -20,7 +20,8 @@ public class GameScene {
     private ArrayList<ProjectileEntity> projectiles;
     private ArrayList<PlanetEntity> planets;
 
-    private ClickableEntity button;
+    private HomeBaseEntity leftBase;
+    private HomeBaseEntity rightBase;
 
     public GameScene() {
         projectiles = new ArrayList<ProjectileEntity>();
@@ -29,7 +30,8 @@ public class GameScene {
         planets.add(new PlanetEntity(ScalingUtil.rightOfCentre(50), ScalingUtil.aboveCentre(50), 30));
         planets.add(new PlanetEntity(ScalingUtil.leftOfCentre(50), ScalingUtil.belowCentre(50), 30));
 
-        button = new HomeBaseEntity(ScalingUtil.fromRight(50), 200);
+        leftBase = new HomeBaseEntity(ScalingUtil.fromLeft(50), 200);
+        rightBase = new HomeBaseEntity(ScalingUtil.fromRight(50), 200);
     }
 
     public void addProjectile(Vect2D pos, Vect2D vel, int team) {
@@ -37,7 +39,40 @@ public class GameScene {
         projectiles.add(projectileEntity);
     }
 
-    public void calculate(float delta) {
+    void attract(ProjectileEntity projectile, float delta) {
+        // Search for nearest planet
+        float minSqDist = 99999999;
+        PlanetEntity nearest = null;
+        for (PlanetEntity planet : planets) {
+            float sqDist = planet.sqDistFrom(projectile);
+            if ( sqDist < minSqDist ) {
+                minSqDist = sqDist;
+                nearest = planet;
+            }
+        }
+        // Apply delta to planet to projectile
+        if ( nearest != null ) {
+            Vect2D toPlanet = nearest.getPos().subtract(projectile.getPos());
+            toPlanet.scaleBy(0.6f);
+            toPlanet.scaleBy(delta);
+            projectile.adjustVelocity(toPlanet);
+        }
+    }
+    void calculate(float delta) {
+        leftBase.calculate(delta);
+        rightBase.calculate(delta);
+
+        // Drift towards nearest planet
+
+        for (ProjectileEntity projectile : projectiles) {
+            if ( projectile.getTeam() == 1 && rightBase.getState() == 1 ) {
+                attract(projectile, delta);
+            } else if (projectile.getTeam() == 2 && leftBase.getState() == 1) {
+                attract(projectile, delta);
+            }
+        }
+
+
         for (PlanetEntity planet : planets) {
             planet.calculate(delta);
         }
@@ -45,6 +80,8 @@ public class GameScene {
         for (ProjectileEntity projectile : projectiles) {
             projectile.calculate(delta);
         }
+
+
 
         // Collisions
         for (PlanetEntity planet : planets) {
@@ -72,6 +109,7 @@ public class GameScene {
             planet.render(renderer);
         }
 
-        button.render(renderer);
+        leftBase.render(renderer);
+        rightBase.render(renderer);
     }
 }

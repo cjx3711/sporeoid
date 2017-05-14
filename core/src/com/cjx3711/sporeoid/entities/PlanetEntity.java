@@ -25,7 +25,7 @@ public class PlanetEntity extends BaseEntity {
 
     public void hit(int team) {
         boolean friendly = this.team == team;
-        health += friendly ? 2 : -2;
+        health += friendly ? 5 : -5;
         if ( health <= 0 ) {
             this.team = team;
             health = 0;
@@ -34,7 +34,7 @@ public class PlanetEntity extends BaseEntity {
 
     @Override
     public void calculate(float delta) {
-        health += 5 * delta;
+        health += 4 * delta;
         if ( health >= 100 ) health = 100;
     }
     @Override
