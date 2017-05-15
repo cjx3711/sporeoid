@@ -9,7 +9,7 @@ import com.cjx3711.sporeoid.utils.Vect2D;
  * Entity Representing a planet
  */
 
-public class PlanetEntity extends BaseEntity {
+public class PlanetEntity extends BaseEntity implements CollidableEntity {
     protected float radius;
     protected float health;
     protected int team;
@@ -23,6 +23,7 @@ public class PlanetEntity extends BaseEntity {
         super(pos);
     }
 
+    @Override
     public void hit(int team) {
         boolean friendly = this.team == team;
         health += friendly ? 5 : -5;

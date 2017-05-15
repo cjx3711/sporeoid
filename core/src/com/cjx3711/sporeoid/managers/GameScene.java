@@ -2,7 +2,9 @@ package com.cjx3711.sporeoid.managers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.cjx3711.sporeoid.entities.BaseEntity;
 import com.cjx3711.sporeoid.entities.ClickableEntity;
+import com.cjx3711.sporeoid.entities.CollidableEntity;
 import com.cjx3711.sporeoid.entities.HomeBaseEntity;
 import com.cjx3711.sporeoid.entities.PlanetEntity;
 import com.cjx3711.sporeoid.entities.ProjectileEntity;
@@ -19,6 +21,7 @@ import java.util.Iterator;
 public class GameScene {
     private ArrayList<ProjectileEntity> projectiles;
     private ArrayList<PlanetEntity> planets;
+    private ArrayList<CollidableEntity> collidables; // Contains PlanetEntities and HomeBaseEntities
 
     private HomeBaseEntity leftBase;
     private HomeBaseEntity rightBase;
@@ -26,12 +29,25 @@ public class GameScene {
     public GameScene() {
         projectiles = new ArrayList<ProjectileEntity>();
         planets = new ArrayList<PlanetEntity>();
+        collidables = new ArrayList<CollidableEntity>();
 
-        planets.add(new PlanetEntity(ScalingUtil.rightOfCentre(50), ScalingUtil.aboveCentre(50), 30));
-        planets.add(new PlanetEntity(ScalingUtil.leftOfCentre(50), ScalingUtil.belowCentre(50), 30));
 
-        leftBase = new HomeBaseEntity(ScalingUtil.fromLeft(50), 200);
-        rightBase = new HomeBaseEntity(ScalingUtil.fromRight(50), 200);
+        addPlanet(ScalingUtil.rightOfCentre(50), ScalingUtil.aboveCentre(50), 30);
+        addPlanet(ScalingUtil.leftOfCentre(50), ScalingUtil.belowCentre(50), 30);
+
+        leftBase = addHomeBase(ScalingUtil.fromLeft(50), 200);
+        rightBase = addHomeBase(ScalingUtil.fromRight(50), 200);
+    }
+
+    public void addPlanet(float x, float y, float rad) {
+        PlanetEntity p = new PlanetEntity(x,y,rad);
+        planets.add(p);
+        collidables.add(p);
+    }
+    public HomeBaseEntity addHomeBase(float x, float y) {
+        HomeBaseEntity h = new HomeBaseEntity(x, y);
+        collidables.add(h);
+        return h;
     }
 
     public void addProjectile(Vect2D pos, Vect2D vel, int team) {
@@ -40,14 +56,14 @@ public class GameScene {
     }
 
     void attract(ProjectileEntity projectile, float delta) {
-        // Search for nearest planet
+        // Search for nearest collidable
         float minSqDist = 99999999;
-        PlanetEntity nearest = null;
-        for (PlanetEntity planet : planets) {
-            float sqDist = planet.sqDistFrom(projectile);
+        BaseEntity nearest = null;
+        for (BaseEntity e : planets) {
+            float sqDist = e.sqDistFrom(projectile);
             if ( sqDist < minSqDist ) {
                 minSqDist = sqDist;
-                nearest = planet;
+                nearest = e;
             }
         }
         // Apply delta to planet to projectile
@@ -62,7 +78,7 @@ public class GameScene {
         leftBase.calculate(delta);
         rightBase.calculate(delta);
 
-        // Drift towards nearest planet
+        // Drift towards nearest collidable
 
         for (ProjectileEntity projectile : projectiles) {
             if ( projectile.getTeam() == 1 && rightBase.getState() == 1 ) {
@@ -84,11 +100,13 @@ public class GameScene {
 
 
         // Collisions
-        for (PlanetEntity planet : planets) {
+        for (CollidableEntity collidable : collidables) {
             for (ProjectileEntity projectile : projectiles) {
-                if ( planet.sqDistFrom(projectile) < (planet.getRadius() + projectile.getRadius()) * (planet.getRadius() + projectile.getRadius()) ) {
+                float sqdist = collidable.getPos().distanceSquared(projectile.getPos());
+                float rad = collidable.getRadius() + projectile.getRadius();
+                if ( sqdist < rad * rad ) {
                     projectile.destroy();
-                    planet.hit(projectile.getTeam());
+                    collidable.hit(projectile.getTeam());
                 }
             }
         }

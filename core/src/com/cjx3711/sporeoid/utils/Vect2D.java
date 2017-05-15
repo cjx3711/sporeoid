@@ -76,6 +76,15 @@ public class Vect2D {
         return new Vect2D(this);
     }
 
+    public float distanceSquared(Vect2D v) {
+        float X = x - v.x;
+        float Y = y - v.y;
+        return X*X + Y*Y;
+    }
+    public float distance(Vect2D v) {
+        return (float)Math.sqrt(distanceSquared(v));
+    }
+
     public float distanceSquared() {
         return x * x + y * y;
     }

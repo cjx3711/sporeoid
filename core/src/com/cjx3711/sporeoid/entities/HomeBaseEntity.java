@@ -13,7 +13,7 @@ import com.cjx3711.sporeoid.utils.Vect2D;
  * Button for Player's base
  */
 
-public class HomeBaseEntity extends ClickableEntity {
+public class HomeBaseEntity extends ClickableEntity implements CollidableEntity {
     private int state;
     private TouchInfo touchInfo = null;
     public HomeBaseEntity(float x, float y) {
@@ -102,4 +102,13 @@ public class HomeBaseEntity extends ClickableEntity {
         shapeRenderer.end();
     }
 
+    @Override
+    public void hit(int team) {
+
+    }
+
+    @Override
+    public float getRadius() {
+        return radius;
+    }
 }
