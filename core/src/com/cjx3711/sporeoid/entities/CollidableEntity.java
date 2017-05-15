@@ -8,7 +8,7 @@ import com.cjx3711.sporeoid.utils.Vect2D;
 
 public interface CollidableEntity {
     void hit(int team);
-    float getRadius();
+    float getHitRadius();
     Vect2D getPos();
 
 }

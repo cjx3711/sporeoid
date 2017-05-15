@@ -64,6 +64,11 @@ public class Vect2D {
         this.y = y;
     }
 
+    public void toUnit() {
+        float dist = distance();
+        x /= dist;
+        y /= dist;
+    }
     public void scaleBy(float scale) {
         x *= scale;
         y *= scale;

@@ -4,7 +4,6 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.cjx3711.sporeoid.managers.GameInputProcessor;
-import com.cjx3711.sporeoid.managers.GameScene;
 import com.cjx3711.sporeoid.managers.GameSceneManager;
 import com.cjx3711.sporeoid.utils.ScalingUtil;
 import com.cjx3711.sporeoid.utils.TimeKeeper;

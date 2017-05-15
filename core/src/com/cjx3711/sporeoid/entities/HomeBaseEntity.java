@@ -15,14 +15,21 @@ import com.cjx3711.sporeoid.utils.Vect2D;
 
 public class HomeBaseEntity extends ClickableEntity implements CollidableEntity {
     private int state;
+    private int hitRadius;
+    private int team;
+    private float health;
     private TouchInfo touchInfo = null;
-    public HomeBaseEntity(float x, float y) {
+    public HomeBaseEntity(float x, float y, int team) {
         super(x, y);
         state = 0;
+        radius = 50;
+        hitRadius = 30;
+        this.team = team;
+        health = 100;
     }
 
-    HomeBaseEntity(Vect2D pos) {
-        super(pos);
+    public int getTeam() {
+        return team;
     }
 
     protected void initTouchCallback() {
@@ -80,17 +87,23 @@ public class HomeBaseEntity extends ClickableEntity implements CollidableEntity 
         } else {
             state = 0;
         }
+
+        health += 3 * delta;
+        if ( health > 100 ) {
+            health = 100;
+        }
+
     }
 
     @Override
     public void render(ShapeRenderer shapeRenderer) {
         if ( state == 1 ) {
-            shapeRenderer.setColor(Color.RED);
-        }
-        else if ( touched ) {
             shapeRenderer.setColor(Color.GREEN);
+        }
+        else if ( !touched ) {
+            shapeRenderer.setColor(team == 1 ? Color.RED : Color.BLUE);
         } else {
-            shapeRenderer.setColor(Color.FOREST);
+            shapeRenderer.setColor(team == 1 ? Color.MAROON : Color.NAVY);
         }
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -98,17 +111,22 @@ public class HomeBaseEntity extends ClickableEntity implements CollidableEntity 
         shapeRenderer.circle(
                 ScalingUtil.standardToScreen(pos.getX()),
                 ScalingUtil.standardToScreen(pos.getY()),
-                ScalingUtil.standardToScreen(radius));
+                ScalingUtil.standardToScreen(getHitRadius()));
         shapeRenderer.end();
     }
 
     @Override
     public void hit(int team) {
-
+        if ( this.team != team ) {
+            health -= 10;
+            if (health < 0) {
+                health = 0;
+            }
+        }
     }
 
     @Override
-    public float getRadius() {
-        return radius;
+    public float getHitRadius() {
+        return hitRadius * ((health / 100) * 0.9f + 0.1f);
     }
 }

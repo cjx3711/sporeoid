@@ -33,6 +33,16 @@ public class PlanetEntity extends BaseEntity implements CollidableEntity {
         }
     }
 
+
+    public float getRadius() {
+        return radius;
+    }
+
+    @Override
+    public float getHitRadius() {
+        return radius;
+    }
+
     @Override
     public void calculate(float delta) {
         health += 4 * delta;
@@ -84,7 +94,4 @@ public class PlanetEntity extends BaseEntity implements CollidableEntity {
 
     }
 
-    public float getRadius() {
-        return radius;
-    }
 }
